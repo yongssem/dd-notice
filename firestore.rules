@@ -1,0 +1,55 @@
+rules_version = '2';
+
+// 뚝딱알림장 MVP 규칙 · Phase 5
+// 학부모 플로우는 초대 링크(classId + inviteToken) 기반. classId/토큰 모두
+// 비추측 난수라 secret-by-URL 구조로 보호. 정식 Auth는 추후 Phase.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function ownsClass(classId) {
+      return isSignedIn()
+        && get(/databases/$(database)/documents/classes/$(classId)).data.teacherUid == request.auth.uid;
+    }
+
+    // 학부모가 parent 문서 업데이트 시 변경 가능한 필드만 허용
+    function parentSelfUpdate() {
+      return request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['parentNickname', 'tokenUsed', 'firstAccessAt', 'lastAccessAt']);
+    }
+
+    match /classes/{classId} {
+      // 교사: 자기 학급
+      allow create: if isSignedIn()
+                    && request.resource.data.teacherUid == request.auth.uid
+                    && request.resource.data.name is string
+                    && request.resource.data.teacherName is string;
+      allow read, update, delete: if isSignedIn()
+                    && resource.data.teacherUid == request.auth.uid;
+      // 학부모: 학급 기본 정보 (이름, 교사이름) read 허용 — classId를 아는 자만
+      allow get: if true;
+
+      match /parents/{parentId} {
+        // 교사: 전권
+        allow read, create, delete: if ownsClass(classId);
+        // list: 학부모 측 findParentByToken 쿼리는 `where('inviteToken','==',token)` 조건.
+        // MVP에선 list 자체 공개 허용 (classId가 URL secret).
+        allow list: if true;
+        // get: 공개 (토큰 검증 후 접근)
+        allow get: if true;
+        // update: 교사 전권, 또는 학부모 자기 필드만
+        allow update: if ownsClass(classId) || parentSelfUpdate();
+      }
+
+      match /notices/{noticeId} {
+        // 교사: 전권
+        allow write: if ownsClass(classId);
+        // 학부모: read만 (classId 아는 자 = 초대받은 학부모)
+        allow read: if true;
+      }
+    }
+  }
+}
