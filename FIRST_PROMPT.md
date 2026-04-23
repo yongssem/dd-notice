@@ -8,17 +8,17 @@
 
 1. **Firebase 프로젝트 생성**
    - 콘솔: https://console.firebase.google.com
-   - 프로젝트명: `ddalkak-notice` (권장)
+   - 프로젝트명: `dd-notice` (권장)
    - 리전: `asia-northeast3` (서울)
    - Firestore 활성화 (프로덕션 모드)
    - Authentication 활성화 (이메일/비밀번호 + Google)
 
 2. **Vercel 프로젝트 준비**
    - GitHub 레포 먼저 만들어두면 연동 쉬움
-   - 프로젝트명: `ddalkak-notice`
+   - 프로젝트명: `dd-notice`
 
 3. **도메인 구상 (선택)**
-   - `ddalkak-notice.vercel.app` (기본)
+   - `dd-notice.vercel.app` (기본)
    - 커스텀 원하면 `notice.ddalkak.kr` 등
 
 ---
@@ -42,7 +42,7 @@
 ## 진행 순서
 
 [Phase 1] 프로젝트 초기화
-- Vite + React 프로젝트 생성 (ddalkak-notice)
+- Vite + React 프로젝트 생성 (dd-notice)
 - Tailwind CSS 설정
 - 폴더 구조: src/components, src/pages, src/hooks, src/lib, src/styles
 - Pretendard + Gaegu 폰트 CDN 연결
