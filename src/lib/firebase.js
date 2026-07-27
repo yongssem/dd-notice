@@ -11,9 +11,16 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-export const firebaseConfigReady = Boolean(
-  firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId,
-);
+// authDomain이 비면 initializeApp은 성공하지만 Google 팝업 로그인이 실패합니다.
+// 그래서 필수 키에 포함해 "설정 대기 중" 화면에서 미리 잡아 줍니다.
+const REQUIRED_KEYS = ['apiKey', 'authDomain', 'projectId', 'appId'];
+
+/** 비어 있는 필수 환경변수 이름 목록 (예: ['VITE_FIREBASE_API_KEY']) */
+export const missingFirebaseEnvKeys = REQUIRED_KEYS.filter(
+  (k) => !firebaseConfig[k],
+).map((k) => `VITE_FIREBASE_${k.replace(/[A-Z]/g, (c) => `_${c}`).toUpperCase()}`);
+
+export const firebaseConfigReady = missingFirebaseEnvKeys.length === 0;
 
 export const app = firebaseConfigReady ? initializeApp(firebaseConfig) : null;
 export const auth = app ? getAuth(app) : null;

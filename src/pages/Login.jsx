@@ -4,6 +4,7 @@ import Layout from '../components/ui/Layout.jsx';
 import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
 import { useAuth } from '../hooks/useAuth.js';
+import { describeFirebaseError } from '../lib/firebaseErrors.js';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -12,32 +13,33 @@ export default function Login() {
   const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  // error는 { code, message, hint } 객체 또는 null
+  const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError(null);
     setBusy(true);
     try {
       if (mode === 'signup') await signUpWithEmail(email, password);
       else await signInWithEmail(email, password);
       navigate('/', { replace: true });
     } catch (err) {
-      setError(prettifyAuthError(err));
+      setError(describeFirebaseError(err, '로그인 중 오류가 발생했습니다.'));
     } finally {
       setBusy(false);
     }
   };
 
   const handleGoogle = async () => {
-    setError('');
+    setError(null);
     setBusy(true);
     try {
       await signInWithGoogle();
       navigate('/', { replace: true });
     } catch (err) {
-      setError(prettifyAuthError(err));
+      setError(describeFirebaseError(err, '로그인 중 오류가 발생했습니다.'));
     } finally {
       setBusy(false);
     }
@@ -84,7 +86,15 @@ export default function Login() {
             />
           </div>
 
-          {error && <p className="text-xs text-ink-accent">{error}</p>}
+          {error && (
+            <div className="text-xs break-words">
+              <p className="text-ink-accent">{error.message}</p>
+              {error.hint && <p className="text-ink-secondary mt-1">{error.hint}</p>}
+              {error.code && (
+                <p className="text-ink-secondary mt-1 opacity-70">오류 코드: {error.code}</p>
+              )}
+            </div>
+          )}
 
           <Button type="submit" variant="primary" disabled={busy} className="w-full">
             {busy ? '처리 중…' : mode === 'signup' ? '가입하기' : '로그인'}
@@ -110,7 +120,7 @@ export default function Login() {
           type="button"
           onClick={() => {
             setMode(mode === 'signup' ? 'signin' : 'signup');
-            setError('');
+            setError(null);
           }}
           className="mt-4 text-xs text-ink-secondary underline underline-offset-2 hover:text-ink-primary"
         >
@@ -121,16 +131,4 @@ export default function Login() {
       </Card>
     </Layout>
   );
-}
-
-function prettifyAuthError(err) {
-  const code = err?.code ?? '';
-  if (code.includes('invalid-credential') || code.includes('wrong-password'))
-    return '이메일 또는 비밀번호가 맞지 않습니다.';
-  if (code.includes('user-not-found')) return '등록되지 않은 이메일입니다.';
-  if (code.includes('email-already-in-use')) return '이미 가입된 이메일입니다.';
-  if (code.includes('weak-password')) return '비밀번호는 6자 이상이어야 합니다.';
-  if (code.includes('popup-closed-by-user')) return '로그인 창이 닫혔습니다.';
-  if (code.includes('network-request-failed')) return '네트워크를 확인해 주세요.';
-  return err?.message ?? '로그인 중 오류가 발생했습니다.';
 }

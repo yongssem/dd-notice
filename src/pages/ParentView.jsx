@@ -11,6 +11,7 @@ import {
   markParentFirstAccess,
   markParentReaccess,
 } from '../lib/firestore.js';
+import { describeFirebaseError } from '../lib/firebaseErrors.js';
 
 export default function ParentView() {
   const { classId, token } = useParams();
@@ -18,21 +19,26 @@ export default function ParentView() {
   const [parent, setParent] = useState(null);
   const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  // error는 { code, message, hint } 객체 또는 null
+  const [error, setError] = useState(null);
 
   const [nickname, setNickname] = useState('');
   const [confirming, setConfirming] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
-    setError('');
+    setError(null);
     try {
       const [k, p] = await Promise.all([
         getClass(classId),
         findParentByToken(classId, token),
       ]);
       if (!k || !p) {
-        setError('유효하지 않은 초대 링크입니다. 담임 선생님께 새 링크를 요청해 주세요.');
+        setError({
+          code: '',
+          message: '유효하지 않은 초대 링크입니다. 담임 선생님께 새 링크를 요청해 주세요.',
+          hint: '',
+        });
         setLoading(false);
         return;
       }
@@ -45,7 +51,7 @@ export default function ParentView() {
         markParentReaccess(classId, p.id).catch(() => {});
       }
     } catch (e) {
-      setError(e?.message ?? '불러오는 중 오류가 발생했습니다.');
+      setError(describeFirebaseError(e, '불러오는 중 오류가 발생했습니다.'));
     } finally {
       setLoading(false);
     }
@@ -59,14 +65,14 @@ export default function ParentView() {
     e.preventDefault();
     if (!nickname.trim()) return;
     setConfirming(true);
-    setError('');
+    setError(null);
     try {
       await markParentFirstAccess(classId, parent.id, nickname);
       const rows = await listNotices(classId);
       setNotices(rows);
       setParent({ ...parent, tokenUsed: true, parentNickname: nickname.trim() });
     } catch (e) {
-      setError(e?.message ?? '확인 처리 실패');
+      setError(describeFirebaseError(e, '확인 처리 실패'));
     } finally {
       setConfirming(false);
     }
@@ -87,7 +93,18 @@ export default function ParentView() {
       <Layout title="뚝딱알림장" subtitle="알림">
         <Card tape="coral">
           <h2 className="font-hand text-2xl mb-2 text-ink-accent">접속 불가</h2>
-          <p className="text-sm text-ink-secondary break-words">{error}</p>
+          <p className="text-sm text-ink-primary break-words">{error.message}</p>
+          {error.code && (
+            <p className="text-xs text-ink-secondary mt-3">
+              문제가 계속되면 담임 선생님께 문의해 주세요.
+            </p>
+          )}
+          {/* 설정 조치 안내는 개발 모드에서만 — 학부모 화면에는 노출하지 않습니다. */}
+          {import.meta.env.DEV && error.hint && (
+            <p className="text-[11px] text-ink-secondary mt-3 break-words opacity-70">
+              {error.hint} {error.code && `(${error.code})`}
+            </p>
+          )}
         </Card>
       </Layout>
     );

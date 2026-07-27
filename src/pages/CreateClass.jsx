@@ -4,17 +4,19 @@ import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
 import { useAuth } from '../hooks/useAuth.js';
 import { createClass } from '../lib/firestore.js';
+import { describeFirebaseError } from '../lib/firebaseErrors.js';
 
 export default function CreateClass({ onCreated }) {
   const { user, logout } = useAuth();
   const [name, setName] = useState('');
   const [teacherName, setTeacherName] = useState('');
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
+  // error는 { code, message, hint } 객체 또는 null
+  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError(null);
     setBusy(true);
     try {
       await createClass({
@@ -24,7 +26,7 @@ export default function CreateClass({ onCreated }) {
       });
       onCreated?.();
     } catch (err) {
-      setError(err?.message ?? '학급 생성 중 오류');
+      setError(describeFirebaseError(err, '학급 생성 중 오류'));
     } finally {
       setBusy(false);
     }
@@ -61,7 +63,15 @@ export default function CreateClass({ onCreated }) {
               className="w-full px-3 py-2 bg-paper-bg border border-paper-line rounded-paper text-ink-primary focus:outline-none focus:border-ink-accent"
             />
           </div>
-          {error && <p className="text-xs text-ink-accent">{error}</p>}
+          {error && (
+            <div className="text-xs break-words">
+              <p className="text-ink-accent">{error.message}</p>
+              {error.hint && <p className="text-ink-secondary mt-1">{error.hint}</p>}
+              {error.code && (
+                <p className="text-ink-secondary mt-1 opacity-70">오류 코드: {error.code}</p>
+              )}
+            </div>
+          )}
           <Button type="submit" variant="primary" disabled={busy} className="w-full">
             {busy ? '만드는 중…' : '학급 만들기'}
           </Button>
