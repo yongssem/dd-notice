@@ -57,7 +57,7 @@ export default function ParentView() {
 
   const handleConfirm = async (e) => {
     e.preventDefault();
-    if (!nickname.trim()) return;
+    if (confirming || !nickname.trim()) return;
     setConfirming(true);
     setError('');
     try {

@@ -24,6 +24,7 @@ export default function Button({
   return (
     <button
       type={type}
+      disabled={disabled}
       onClick={disabled ? undefined : onClick}
       aria-disabled={disabled || undefined}
       className={`${base} ${v} ${disabledCls} ${className}`}

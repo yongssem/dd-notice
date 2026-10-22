@@ -17,6 +17,7 @@ export default function Login() {
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
+    if (busy) return;
     setError('');
     setBusy(true);
     try {
@@ -31,6 +32,7 @@ export default function Login() {
   };
 
   const handleGoogle = async () => {
+    if (busy) return;
     setError('');
     setBusy(true);
     try {
