@@ -76,8 +76,10 @@ export default function ClassDashboard({ klass }) {
         await createNotice(klass.id, { date, content });
       }
       await refreshNotices();
+      return true;
     } catch (e) {
       setNoticeError(e?.message ?? '알림장 저장 실패');
+      return false;
     } finally {
       setNoticeBusy(false);
     }

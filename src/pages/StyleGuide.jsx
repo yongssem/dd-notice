@@ -43,7 +43,7 @@ export default function StyleGuide() {
             </Button>
           </div>
           <p className="mt-4 text-xs text-ink-secondary">
-            native disabled 대신 opacity-50 + pointer-events-none 적용.
+            native disabled와 비활성 스타일을 함께 적용합니다.
           </p>
         </Card>
 

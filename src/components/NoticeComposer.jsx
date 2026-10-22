@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Card from './ui/Card.jsx';
 import Button from './ui/Button.jsx';
 
@@ -17,6 +17,7 @@ export default function NoticeComposer({
 }) {
   const [date, setDate] = useState(initial?.date ?? today());
   const [content, setContent] = useState(initial?.content ?? '');
+  const submitLock = useRef(false);
 
   useEffect(() => {
     setDate(initial?.date ?? today());
@@ -25,10 +26,16 @@ export default function NoticeComposer({
 
   const isEdit = Boolean(initial?.id);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!content.trim()) return;
-    onSubmit({ date, content });
+    if (busy || submitLock.current || !date || !content.trim()) return;
+    submitLock.current = true;
+    try {
+      const saved = await onSubmit({ date, content });
+      if (saved === true && !isEdit) setContent('');
+    } finally {
+      submitLock.current = false;
+    }
   };
 
   return (
