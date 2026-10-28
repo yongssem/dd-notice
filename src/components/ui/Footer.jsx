@@ -9,7 +9,7 @@ export default function Footer() {
       >
         무궁무진클래스
       </a>{' '}
-      · 용쌤
+      · 바이브용샘
     </footer>
   );
 }
