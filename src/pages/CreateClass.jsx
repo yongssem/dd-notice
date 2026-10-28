@@ -35,8 +35,8 @@ export default function CreateClass({ onCreated }) {
       <Card tape="mint" className="max-w-md mx-auto">
         <h2 className="font-hand text-2xl mb-2">우리 반 정보</h2>
         <p className="text-sm text-ink-secondary mb-4">
-          MVP는 학급 <span className="text-ink-accent font-semibold">1개</span>만 지원합니다.
-          학생 명단은 생성 후 다음 단계에서 입력할 수 있습니다.
+          한 계정에 학급 <span className="text-ink-accent font-semibold">1개</span>를 사용합니다.
+          학생 명단은 학급을 만든 뒤 등록할 수 있습니다.
         </p>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>

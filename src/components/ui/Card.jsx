@@ -13,13 +13,13 @@ export default function Card({
   const tapeCls = tape ? tapeColors[tape] : null;
   return (
     <div
-      className={`relative bg-paper-card border border-paper-line rounded-paper shadow-paper p-5 ${className}`}
+      className={`ink-card relative bg-paper-card p-5 ${className}`}
       {...rest}
     >
       {tapeCls && (
         <span
           aria-hidden
-          className={`absolute -top-2 left-6 h-4 w-20 ${tapeCls} opacity-85 -rotate-3 rounded-sm shadow-sm`}
+          className={`card-accent ${tapeCls}`}
         />
       )}
       {children}

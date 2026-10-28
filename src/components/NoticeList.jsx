@@ -35,9 +35,10 @@ export default function NoticeList({
         <Card
           key={n.id}
           tape={['yellow', 'mint', 'coral'][idx % 3]}
+          className="notice-card"
         >
           <div className="flex items-center justify-between gap-3 mb-2">
-            <div className="font-hand text-xl text-ink-primary">
+            <div className="notice-date text-ink-primary">
               {formatDate(n.date)}
             </div>
             {!readonly && (
@@ -55,7 +56,7 @@ export default function NoticeList({
               </div>
             )}
           </div>
-          <pre className="whitespace-pre-wrap font-sans text-sm text-ink-primary leading-relaxed">
+          <pre className="notice-content whitespace-pre-wrap font-sans text-ink-primary">
 {n.content}
           </pre>
         </Card>

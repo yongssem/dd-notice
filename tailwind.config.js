@@ -5,31 +5,31 @@ export default {
     extend: {
       colors: {
         paper: {
-          bg: '#FAF6EE',
-          card: '#FFFCF5',
-          line: '#E8DFD0',
+          bg: '#FFFAEF',
+          card: '#FFFAEF',
+          line: '#342C21',
         },
         ink: {
-          primary: '#3D2E1F',
-          secondary: '#6B5B47',
-          accent: '#D4574E',
+          primary: '#342C21',
+          secondary: '#655E51',
+          accent: '#237E7F',
         },
         tape: {
           yellow: '#F5D76E',
-          mint: '#A8D8C8',
+          mint: '#E8EFDA',
           coral: '#F5A89B',
         },
       },
       fontFamily: {
-        sans: ['Pretendard', 'system-ui', '-apple-system', 'sans-serif'],
-        hand: ['Gaegu', 'cursive'],
+        sans: ['Paperlogy', 'system-ui', '-apple-system', 'sans-serif'],
+        hand: ['Paperlogy', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        paper: '2px 3px 0 rgba(0,0,0,0.08)',
-        'paper-lg': '3px 5px 0 rgba(0,0,0,0.10)',
+        paper: '3px 3px 0 #342C21',
+        'paper-lg': '7px 7px 0 #237E7F',
       },
       borderRadius: {
-        paper: '6px',
+        paper: '14px',
       },
     },
   },

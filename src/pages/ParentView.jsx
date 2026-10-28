@@ -96,7 +96,7 @@ export default function ParentView() {
   if (parent && !parent.tokenUsed) {
     return (
       <Layout title="뚝딱알림장" subtitle={`${klass.name} · ${klass.teacherName} 선생님`}>
-        <Card tape="yellow" className="max-w-md mx-auto">
+        <Card tape="yellow" className="parent-confirm max-w-md mx-auto">
           <h2 className="font-hand text-2xl mb-2">
             <span className="text-ink-accent">{parent.studentName}</span> 학부모님이신가요?
           </h2>
@@ -129,9 +129,10 @@ export default function ParentView() {
       title="뚝딱알림장"
       subtitle={`${klass.name} · ${parent.studentName} (${parent.parentNickname || '학부모'})`}
     >
-      <h2 className="font-hand text-2xl mb-3 px-1">
-        우리 반 알림장 ({notices.length})
-      </h2>
+      <div className="parent-intro">
+        <h2>우리 반 알림장</h2>
+        <span className="count-label">{notices.length}개의 안내</span>
+      </div>
       <NoticeList notices={notices} loading={false} readonly />
     </Layout>
   );

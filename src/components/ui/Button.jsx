@@ -1,13 +1,12 @@
 const base =
-  'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-paper shadow-paper ' +
-  'font-sans text-base font-semibold select-none transition-transform ' +
-  'active:translate-y-[1px] active:shadow-none';
+  'ink-button inline-flex items-center justify-center gap-2 px-4 py-2 ' +
+  'font-sans text-base select-none';
 
 const variants = {
   primary:
-    'bg-ink-accent text-paper-card border border-ink-accent hover:brightness-105',
+    'ink-button-primary bg-ink-accent text-white',
   secondary:
-    'bg-paper-card text-ink-primary border border-paper-line hover:bg-paper-bg',
+    'ink-button-secondary bg-paper-card text-ink-primary',
 };
 
 export default function Button({

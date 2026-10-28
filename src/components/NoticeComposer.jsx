@@ -39,7 +39,7 @@ export default function NoticeComposer({
   };
 
   return (
-    <Card tape="mint">
+    <Card tape="mint" className="notice-composer">
       <h2 className="font-hand text-2xl mb-3">
         {isEdit ? '알림장 수정' : '알림장 작성'}
       </h2>
@@ -51,7 +51,7 @@ export default function NoticeComposer({
             required
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="px-3 py-1.5 bg-paper-bg border border-paper-line rounded-paper text-ink-primary text-sm focus:outline-none focus:border-ink-accent"
+            className="ink-field date-field"
           />
         </div>
         <textarea
@@ -60,7 +60,7 @@ export default function NoticeComposer({
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder={'오늘의 알림을 적어주세요.\n줄바꿈은 그대로 보입니다.'}
-          className="w-full px-3 py-2 bg-paper-bg border border-paper-line rounded-paper text-ink-primary focus:outline-none focus:border-ink-accent text-sm leading-relaxed"
+          className="ink-field notice-body-field"
         />
         {error && <p className="text-xs text-ink-accent">{error}</p>}
         <div className="flex items-center gap-2">
