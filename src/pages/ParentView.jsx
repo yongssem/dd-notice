@@ -4,13 +4,7 @@ import Layout from '../components/ui/Layout.jsx';
 import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
 import NoticeList from '../components/NoticeList.jsx';
-import {
-  getClass,
-  findParentByToken,
-  listNotices,
-  markParentFirstAccess,
-  markParentReaccess,
-} from '../lib/firestore.js';
+import { visitParent } from '../lib/parent-api.js';
 
 export default function ParentView() {
   const { classId, token } = useParams();
@@ -27,23 +21,10 @@ export default function ParentView() {
     setLoading(true);
     setError('');
     try {
-      const [k, p] = await Promise.all([
-        getClass(classId),
-        findParentByToken(classId, token),
-      ]);
-      if (!k || !p) {
-        setError('유효하지 않은 초대 링크입니다. 담임 선생님께 새 링크를 요청해 주세요.');
-        setLoading(false);
-        return;
-      }
-      setKlass(k);
-      setParent(p);
-
-      if (p.tokenUsed) {
-        const rows = await listNotices(classId);
-        setNotices(rows);
-        markParentReaccess(classId, p.id).catch(() => {});
-      }
+      const result = await visitParent(classId, token);
+      setKlass(result.klass);
+      setParent(result.parent);
+      setNotices(result.notices);
     } catch (e) {
       setError(e?.message ?? '불러오는 중 오류가 발생했습니다.');
     } finally {
@@ -61,10 +42,10 @@ export default function ParentView() {
     setConfirming(true);
     setError('');
     try {
-      await markParentFirstAccess(classId, parent.id, nickname);
-      const rows = await listNotices(classId);
-      setNotices(rows);
-      setParent({ ...parent, tokenUsed: true, parentNickname: nickname.trim() });
+      const result = await visitParent(classId, token, nickname);
+      setKlass(result.klass);
+      setParent(result.parent);
+      setNotices(result.notices);
     } catch (e) {
       setError(e?.message ?? '확인 처리 실패');
     } finally {

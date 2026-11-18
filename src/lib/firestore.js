@@ -2,7 +2,6 @@ import {
   collection,
   doc,
   addDoc,
-  getDoc,
   getDocs,
   setDoc,
   updateDoc,
@@ -100,13 +99,6 @@ export async function deleteStudent(classId, parentId) {
   await deleteDoc(doc(db, 'classes', classId, 'parents', parentId));
 }
 
-export async function getClass(classId) {
-  if (!db || !classId) return null;
-  const snap = await getDoc(doc(db, 'classes', classId));
-  if (!snap.exists()) return null;
-  return { id: snap.id, ...snap.data() };
-}
-
 // ───────── 알림장 (notices) ─────────
 
 export async function listNotices(classId) {
@@ -150,36 +142,4 @@ export async function updateNotice(classId, noticeId, { date, content }) {
 export async function deleteNotice(classId, noticeId) {
   if (!db) throw new Error('Firestore 미초기화');
   await deleteDoc(doc(db, 'classes', classId, 'notices', noticeId));
-}
-
-// ───────── 학부모 진입 (inviteToken 기반) ─────────
-
-export async function findParentByToken(classId, token) {
-  if (!db || !classId || !token) return null;
-  const q = query(
-    collection(db, 'classes', classId, 'parents'),
-    where('inviteToken', '==', token),
-    limit(1),
-  );
-  const snap = await getDocs(q);
-  if (snap.empty) return null;
-  const d = snap.docs[0];
-  return { id: d.id, ...d.data() };
-}
-
-export async function markParentFirstAccess(classId, parentId, nickname) {
-  if (!db) throw new Error('Firestore 미초기화');
-  await updateDoc(doc(db, 'classes', classId, 'parents', parentId), {
-    parentNickname: nickname.trim(),
-    tokenUsed: true,
-    firstAccessAt: serverTimestamp(),
-    lastAccessAt: serverTimestamp(),
-  });
-}
-
-export async function markParentReaccess(classId, parentId) {
-  if (!db) throw new Error('Firestore 미초기화');
-  await updateDoc(doc(db, 'classes', classId, 'parents', parentId), {
-    lastAccessAt: serverTimestamp(),
-  });
 }
