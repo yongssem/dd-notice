@@ -10,6 +10,7 @@ export default function Footer() {
         무궁무진클래스
       </a>{' '}
       · 바이브용샘
+      {' · '}<a href="/privacy.html" target="_blank" rel="noopener noreferrer">개인정보 처리방침</a>
     </footer>
   );
 }
